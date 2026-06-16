@@ -96,6 +96,29 @@
     text-align: right;
   }
 
+  .search-bar {
+    max-width: 540px;
+    margin: 18px auto 0;
+  }
+  .search-bar input {
+    width: 100%;
+    padding: 12px 14px;
+    border-radius: 10px;
+    border: 1px solid #D1D5DB;
+    background: #fff;
+    font-size: 13px;
+    color: #111827;
+    outline: none;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  }
+  .search-bar input::placeholder {
+    color: #9CA3AF;
+  }
+  .search-bar input:focus {
+    border-color: #2563EB;
+    box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.08);
+  }
+
   /* MAIN */
   .main {
     max-width: 860px;
@@ -278,6 +301,9 @@
   <div class="prog-row">
     <div class="prog-bg"><div class="prog-fill" id="progFill"></div></div>
     <div class="prog-label" id="progLabel">0 / 80 solved</div>
+  </div>
+  <div class="search-bar">
+    <input id="searchInput" type="search" placeholder="Search questions..." autocomplete="off"/>
   </div>
 </header>
 
@@ -481,6 +507,9 @@ function buildUI() {
       const isDone = !!state[key];
       const row = document.createElement("div");
       row.className = "prob-row" + (isDone ? " done" : "");
+      row.dataset.name = prob.t.toLowerCase();
+      row.dataset.num = prob.n.toLowerCase();
+      row.dataset.topic = topic.name.toLowerCase();
 
       const lcURL = `https://leetcode.com/problems/${prob.lc}/`;
       const url = prob.url || lcURL;
@@ -527,6 +556,24 @@ function buildUI() {
 
   refreshProgress();
 }
+
+function filterProblems() {
+  const query = document.getElementById("searchInput").value.trim().toLowerCase();
+  const allCards = document.querySelectorAll(".topic-card");
+
+  allCards.forEach(card => {
+    let hasMatch = false;
+    card.querySelectorAll(".prob-row").forEach(row => {
+      const matches = query === "" || [row.dataset.name, row.dataset.num, row.dataset.topic].some(value => value.includes(query));
+      row.style.display = matches ? "" : "none";
+      if (matches) hasMatch = true;
+    });
+    card.style.display = hasMatch ? "" : "none";
+  });
+}
+
+const searchInput = document.getElementById("searchInput");
+searchInput.addEventListener("input", filterProblems);
 
 buildUI();
 </script>
