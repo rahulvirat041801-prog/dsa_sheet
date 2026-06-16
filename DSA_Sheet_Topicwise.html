@@ -1,0 +1,534 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>DSA Sheet — Topic-wise</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+    background: #F5F6F8;
+    color: #111827;
+    min-height: 100vh;
+  }
+
+  .topbar {
+    height: 3px;
+    background: linear-gradient(90deg, #2563EB, #7C3AED, #059669);
+  }
+
+  /* HEADER */
+  .site-header {
+    background: #fff;
+    border-bottom: 1px solid #E5E7EB;
+    padding: 36px 24px 30px;
+    text-align: center;
+  }
+  .site-header h1 {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.4px;
+    color: #111827;
+  }
+  .site-header .subtitle {
+    font-size: 13px;
+    color: #6B7280;
+    margin-top: 4px;
+    letter-spacing: 0.1px;
+  }
+
+  /* STATS */
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    max-width: 540px;
+    margin: 20px auto 0;
+    border: 1px solid #E5E7EB;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+  }
+  .stat-cell {
+    flex: 1;
+    padding: 11px 6px;
+    text-align: center;
+    border-right: 1px solid #E5E7EB;
+  }
+  .stat-cell:last-child { border-right: none; }
+  .stat-n { font-size: 20px; font-weight: 700; }
+  .stat-l { font-size: 10px; color: #9CA3AF; margin-top: 2px; font-weight: 600; letter-spacing: 0.5px; text-transform: uppercase; }
+  .s-total .stat-n { color: #2563EB; }
+  .s-easy  .stat-n { color: #059669; }
+  .s-med   .stat-n { color: #D97706; }
+  .s-hard  .stat-n { color: #DC2626; }
+  .s-topic .stat-n { color: #7C3AED; }
+
+  /* PROGRESS */
+  .prog-row {
+    max-width: 540px;
+    margin: 14px auto 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .prog-bg {
+    flex: 1;
+    height: 5px;
+    background: #E5E7EB;
+    border-radius: 999px;
+    overflow: hidden;
+  }
+  .prog-fill {
+    height: 100%;
+    background: linear-gradient(90deg, #2563EB, #7C3AED);
+    border-radius: 999px;
+    transition: width 0.35s ease;
+    width: 0%;
+  }
+  .prog-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #6B7280;
+    min-width: 86px;
+    text-align: right;
+  }
+
+  /* MAIN */
+  .main {
+    max-width: 860px;
+    margin: 28px auto 60px;
+    padding: 0 16px;
+  }
+
+  /* TOPIC CARD */
+  .topic-card {
+    background: #fff;
+    border: 1px solid #E5E7EB;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+  }
+
+  .topic-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+  }
+  .topic-left { display: flex; align-items: center; gap: 10px; }
+  .topic-icon {
+    width: 32px; height: 32px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.22);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+  .topic-name { font-size: 14px; font-weight: 700; color: #fff; }
+  .topic-done { font-size: 11px; color: rgba(255,255,255,0.78); margin-top: 1px; }
+  .topic-badge {
+    font-size: 11px; font-weight: 600;
+    background: rgba(255,255,255,0.2);
+    color: #fff;
+    padding: 3px 11px;
+    border-radius: 20px;
+  }
+
+  /* COLUMN HEADERS */
+  .col-head {
+    display: grid;
+    grid-template-columns: 56px 1fr 84px 72px 32px;
+    padding: 6px 16px;
+    background: #F9FAFB;
+    border-bottom: 1px solid #E5E7EB;
+    font-size: 10px;
+    font-weight: 700;
+    color: #9CA3AF;
+    letter-spacing: 0.6px;
+    text-transform: uppercase;
+  }
+  .col-head-solve { text-align: center; }
+
+  /* PROBLEM ROW */
+  .prob-row {
+    display: grid;
+    grid-template-columns: 56px 1fr 84px 72px 32px;
+    align-items: center;
+    padding: 9px 16px;
+    border-bottom: 1px solid #F3F4F6;
+    transition: background 0.12s;
+    cursor: default;
+  }
+  .prob-row:last-child { border-bottom: none; }
+  .prob-row:hover { background: #F9FAFB; }
+  .prob-row.done { background: #F0FDF4; }
+  .prob-row.done:hover { background: #DCFCE7; }
+
+  .p-num {
+    font-size: 11px;
+    font-weight: 700;
+    color: #D1D5DB;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .p-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: #1F2937;
+    line-height: 1.4;
+    transition: color 0.15s;
+    padding-right: 8px;
+  }
+  .prob-row.done .p-name {
+    text-decoration: line-through;
+    text-decoration-color: #6EE7B7;
+    color: #9CA3AF;
+  }
+
+  /* DIFFICULTY */
+  .badge {
+    font-size: 10px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 20px;
+    display: inline-block;
+    letter-spacing: 0.2px;
+  }
+  .badge.Easy   { background: #D1FAE5; color: #065F46; }
+  .badge.Medium { background: #FEF3C7; color: #92400E; }
+  .badge.Hard   { background: #FEE2E2; color: #991B1B; }
+  .prob-row.done .badge { opacity: 0.4; }
+
+  /* SOLVE BUTTON */
+  .solve-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #2563EB;
+    background: #EFF6FF;
+    border: 1px solid #BFDBFE;
+    border-radius: 6px;
+    padding: 4px 9px;
+    text-decoration: none;
+    transition: background 0.12s, color 0.12s;
+    white-space: nowrap;
+  }
+  .solve-btn:hover { background: #2563EB; color: #fff; border-color: #2563EB; }
+  .prob-row.done .solve-btn { opacity: 0.45; pointer-events: none; }
+  .solve-btn svg { width: 10px; height: 10px; flex-shrink: 0; }
+
+  /* CHECKBOX */
+  .cb-wrap { display: flex; justify-content: center; align-items: center; }
+  .cb {
+    width: 16px; height: 16px;
+    border-radius: 4px;
+    border: 2px solid #D1D5DB;
+    appearance: none;
+    -webkit-appearance: none;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.15s;
+    flex-shrink: 0;
+  }
+  .cb:hover { border-color: #6B7280; }
+  .cb:checked { border-color: #059669; background: #059669; }
+  .cb:checked::after {
+    content: "";
+    position: absolute;
+    top: 1px; left: 4px;
+    width: 4px; height: 8px;
+    border: 2px solid #fff;
+    border-top: none; border-left: none;
+    transform: rotate(45deg);
+  }
+
+  /* FOOTER */
+  footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 11px;
+    color: #9CA3AF;
+    border-top: 1px solid #E5E7EB;
+    background: #fff;
+  }
+</style>
+</head>
+<body>
+
+<div class="topbar"></div>
+
+<header class="site-header">
+  <h1>DSA Sheet</h1>
+  <p class="subtitle">Topic-wise Problem Reference &nbsp;·&nbsp; <span id="totalCount">80</span> Problems</p>
+
+  <div class="stats-row">
+    <div class="stat-cell s-total"><div class="stat-n" id="sTotal">80</div><div class="stat-l">Total</div></div>
+    <div class="stat-cell s-easy"> <div class="stat-n" id="sEasy">—</div><div class="stat-l">Easy</div></div>
+    <div class="stat-cell s-med">  <div class="stat-n" id="sMed">—</div><div class="stat-l">Medium</div></div>
+    <div class="stat-cell s-hard"> <div class="stat-n" id="sHard">—</div><div class="stat-l">Hard</div></div>
+    <div class="stat-cell s-topic"><div class="stat-n">10</div><div class="stat-l">Topics</div></div>
+  </div>
+
+  <div class="prog-row">
+    <div class="prog-bg"><div class="prog-fill" id="progFill"></div></div>
+    <div class="prog-label" id="progLabel">0 / 80 solved</div>
+  </div>
+</header>
+
+<main class="main" id="main"></main>
+
+<footer>DSA Sheet &nbsp;·&nbsp; Topic-wise Reference &nbsp;·&nbsp; LeetCode Problems</footer>
+
+<script>
+const TOPICS = [
+  {
+    name: "Arrays", icon: "📊", color: "#2563EB",
+    problems: [
+      { n:"1",   t:"Two Sum",                              d:"Easy",   lc:"two-sum" },
+      { n:"53",  t:"Maximum Subarray (Kadane's)",          d:"Medium", lc:"maximum-subarray" },
+      { n:"121", t:"Best Time to Buy and Sell Stock",      d:"Easy",   lc:"best-time-to-buy-and-sell-stock" },
+      { n:"217", t:"Contains Duplicate",                   d:"Easy",   lc:"contains-duplicate" },
+      { n:"26",  t:"Remove Duplicates from Sorted Array",  d:"Easy",   lc:"remove-duplicates-from-sorted-array" },
+      { n:"169", t:"Majority Element",                     d:"Easy",   lc:"majority-element" },
+      { n:"283", t:"Move Zeroes",                          d:"Easy",   lc:"move-zeroes" },
+      { n:"238", t:"Product of Array Except Self",         d:"Medium", lc:"product-of-array-except-self" },
+      { n:"11",  t:"Container With Most Water",            d:"Medium", lc:"container-with-most-water" },
+      { n:"56",  t:"Merge Intervals",                      d:"Medium", lc:"merge-intervals" },
+      { n:"189", t:"Rotate Array",                         d:"Medium", lc:"rotate-array" },
+      { n:"42",  t:"Trapping Rain Water",                  d:"Hard",   lc:"trapping-rain-water" },
+      { n:"152", t:"Maximum Product Subarray",             d:"Medium", lc:"maximum-product-subarray" },
+      { n:"31",  t:"Next Permutation",                     d:"Medium", lc:"next-permutation" },
+      { n:"560", t:"Subarray Sum Equals K",                d:"Medium", lc:"subarray-sum-equals-k" },
+      { n:"287", t:"Find the Duplicate Number",            d:"Medium", lc:"find-the-duplicate-number" },
+      { n:"215", t:"Kth Largest Element in an Array",      d:"Medium", lc:"kth-largest-element-in-an-array" },
+    ]
+  },
+  {
+    name: "Linked Lists", icon: "🔗", color: "#059669",
+    problems: [
+      { n:"876", t:"Middle of the Linked List",            d:"Easy",   lc:"middle-of-the-linked-list" },
+      { n:"203", t:"Remove Linked List Elements",          d:"Easy",   lc:"remove-linked-list-elements" },
+      { n:"206", t:"Reverse Linked List",                  d:"Easy",   lc:"reverse-linked-list" },
+      { n:"234", t:"Palindrome Linked List",               d:"Easy",   lc:"palindrome-linked-list" },
+      { n:"83",  t:"Remove Duplicates from Sorted List",   d:"Easy",   lc:"remove-duplicates-from-sorted-list" },
+      { n:"141", t:"Linked List Cycle",                    d:"Easy",   lc:"linked-list-cycle" },
+      { n:"21",  t:"Merge Two Sorted Lists",               d:"Easy",   lc:"merge-two-sorted-lists" },
+      { n:"19",  t:"Remove Nth Node From End of List",     d:"Medium", lc:"remove-nth-node-from-end-of-list" },
+      { n:"142", t:"Linked List Cycle II",                 d:"Medium", lc:"linked-list-cycle-ii" },
+      { n:"24",  t:"Swap Nodes in Pairs",                  d:"Medium", lc:"swap-nodes-in-pairs" },
+      { n:"2",   t:"Add Two Numbers",                      d:"Medium", lc:"add-two-numbers" },
+      { n:"328", t:"Odd Even Linked List",                 d:"Medium", lc:"odd-even-linked-list" },
+      { n:"61",  t:"Rotate List",                          d:"Medium", lc:"rotate-list" },
+      { n:"143", t:"Reorder List",                         d:"Medium", lc:"reorder-list" },
+      { n:"92",  t:"Reverse Linked List II",               d:"Medium", lc:"reverse-linked-list-ii" },
+    ]
+  },
+  {
+    name: "Binary Tree", icon: "🌳", color: "#16A34A",
+    problems: [
+      { n:"104", t:"Maximum Depth of Binary Tree",         d:"Easy",   lc:"maximum-depth-of-binary-tree" },
+      { n:"144", t:"Binary Tree Preorder Traversal",       d:"Easy",   lc:"binary-tree-preorder-traversal" },
+      { n:"94",  t:"Binary Tree Inorder Traversal",        d:"Easy",   lc:"binary-tree-inorder-traversal" },
+      { n:"145", t:"Binary Tree Postorder Traversal",      d:"Easy",   lc:"binary-tree-postorder-traversal" },
+      { n:"102", t:"Binary Tree Level Order Traversal",    d:"Medium", lc:"binary-tree-level-order-traversal" },
+      { n:"222", t:"Count Complete Tree Nodes",            d:"Easy",   lc:"count-complete-tree-nodes" },
+      { n:"100", t:"Same Tree",                            d:"Easy",   lc:"same-tree" },
+      { n:"110", t:"Balanced Binary Tree",                 d:"Easy",   lc:"balanced-binary-tree" },
+      { n:"111", t:"Minimum Depth of Binary Tree",         d:"Easy",   lc:"minimum-depth-of-binary-tree" },
+      { n:"236", t:"Lowest Common Ancestor of a Binary Tree", d:"Medium", lc:"lowest-common-ancestor-of-a-binary-tree" },
+      { n:"572", t:"Subtree of Another Tree",              d:"Easy",   lc:"subtree-of-another-tree" },
+      { n:"112", t:"Path Sum",                             d:"Easy",   lc:"path-sum" },
+    ]
+  },
+  {
+    name: "Stack & Queue", icon: "📦", color: "#D97706",
+    problems: [
+      { n:"20",  t:"Valid Parentheses",                    d:"Easy",   lc:"valid-parentheses" },
+      { n:"232", t:"Implement Queue using Stacks",         d:"Easy",   lc:"implement-queue-using-stacks" },
+      { n:"933", t:"Number of Recent Calls",               d:"Easy",   lc:"number-of-recent-calls" },
+      { n:"496", t:"Next Greater Element I",               d:"Easy",   lc:"next-greater-element-i" },
+      { n:"155", t:"Min Stack",                            d:"Medium", lc:"min-stack" },
+      { n:"739", t:"Daily Temperatures",                   d:"Medium", lc:"daily-temperatures" },
+      { n:"503", t:"Next Greater Element II",              d:"Medium", lc:"next-greater-element-ii" },
+      { n:"162", t:"Find Peak Element",                    d:"Medium", lc:"find-peak-element" },
+      { n:"239", t:"Sliding Window Maximum",               d:"Hard",   lc:"sliding-window-maximum" },
+    ]
+  },
+  {
+    name: "Binary Search", icon: "🔍", color: "#7C3AED",
+    problems: [
+      { n:"704", t:"Binary Search",                        d:"Easy",   lc:"binary-search" },
+      { n:"35",  t:"Search Insert Position",               d:"Easy",   lc:"search-insert-position" },
+      { n:"GFG", t:"First Occurrence in Sorted Array",     d:"Easy",   lc:"find-first-and-last-position-of-element-in-sorted-array", url:"https://www.geeksforgeeks.org/problems/binary-search-1587115620/1" },
+      { n:"33",  t:"Search in Rotated Sorted Array",       d:"Medium", lc:"search-in-rotated-sorted-array" },
+      { n:"81",  t:"Search in Rotated Sorted Array II",    d:"Medium", lc:"search-in-rotated-sorted-array-ii" },
+      { n:"34",  t:"Find First and Last Position in Array",d:"Medium", lc:"find-first-and-last-position-of-element-in-sorted-array" },
+      { n:"153", t:"Find Minimum in Rotated Sorted Array", d:"Medium", lc:"find-minimum-in-rotated-sorted-array" },
+      { n:"74",  t:"Search a 2D Matrix",                   d:"Medium", lc:"search-a-2d-matrix" },
+    ]
+  },
+  {
+    name: "Strings", icon: "📝", color: "#0284C7",
+    problems: [
+      { n:"125", t:"Valid Palindrome",                     d:"Easy",   lc:"valid-palindrome" },
+      { n:"344", t:"Reverse String",                       d:"Easy",   lc:"reverse-string" },
+      { n:"14",  t:"Longest Common Prefix",                d:"Easy",   lc:"longest-common-prefix" },
+      { n:"242", t:"Valid Anagram",                        d:"Easy",   lc:"valid-anagram" },
+      { n:"151", t:"Reverse Words in a String",            d:"Medium", lc:"reverse-words-in-a-string" },
+      { n:"443", t:"String Compression",                   d:"Medium", lc:"string-compression" },
+      { n:"49",  t:"Group Anagrams",                       d:"Medium", lc:"group-anagrams" },
+      { n:"567", t:"Permutation in String",                d:"Medium", lc:"permutation-in-string" },
+      { n:"5",   t:"Longest Palindromic Substring",        d:"Medium", lc:"longest-palindromic-substring" },
+    ]
+  },
+  {
+    name: "Sliding Window", icon: "🪟", color: "#DC2626",
+    problems: [
+      { n:"3",   t:"Longest Substring Without Repeating Characters", d:"Medium", lc:"longest-substring-without-repeating-characters" },
+      { n:"643", t:"Maximum Average Subarray I",           d:"Easy",   lc:"maximum-average-subarray-i" },
+      { n:"209", t:"Minimum Size Subarray Sum",            d:"Medium", lc:"minimum-size-subarray-sum" },
+    ]
+  },
+  {
+    name: "Two Pointers", icon: "👆", color: "#DB2777",
+    problems: [
+      { n:"977", t:"Squares of a Sorted Array",            d:"Easy",   lc:"squares-of-a-sorted-array" },
+      { n:"15",  t:"3Sum",                                 d:"Medium", lc:"3sum" },
+    ]
+  },
+  {
+    name: "Graphs", icon: "🕸️", color: "#0891B2",
+    problems: [
+      { n:"200", t:"Number of Islands",                    d:"Medium", lc:"number-of-islands" },
+    ]
+  },
+  {
+    name: "Greedy / DP / Math", icon: "🧠", color: "#EA580C",
+    problems: [
+      { n:"70",  t:"Climbing Stairs (DP — Fibonacci)",     d:"Easy",   lc:"climbing-stairs" },
+      { n:"55",  t:"Jump Game (Greedy)",                   d:"Medium", lc:"jump-game" },
+      { n:"50",  t:"Pow(x, n) — Fast Exponentiation",      d:"Medium", lc:"powx-n" },
+      { n:"322", t:"Coin Change (DP — Unbounded Knapsack)", d:"Medium", lc:"coin-change" },
+    ]
+  },
+];
+
+// compute totals
+let totalProbs = 0, easyC = 0, medC = 0, hardC = 0;
+TOPICS.forEach(t => t.problems.forEach(p => {
+  totalProbs++;
+  if (p.d === "Easy") easyC++;
+  else if (p.d === "Medium") medC++;
+  else hardC++;
+}));
+document.getElementById("sTotal").textContent = totalProbs;
+document.getElementById("sEasy").textContent  = easyC;
+document.getElementById("sMed").textContent   = medC;
+document.getElementById("sHard").textContent  = hardC;
+document.getElementById("totalCount").textContent = totalProbs;
+document.getElementById("progLabel").textContent = `0 / ${totalProbs} solved`;
+
+// state
+const SK = "dsa_v2";
+let state = {};
+try { state = JSON.parse(localStorage.getItem(SK) || "{}"); } catch(e) {}
+function save() { try { localStorage.setItem(SK, JSON.stringify(state)); } catch(e) {} }
+
+function refreshProgress() {
+  const done = Object.values(state).filter(Boolean).length;
+  document.getElementById("progFill").style.width = (done / totalProbs * 100).toFixed(2) + "%";
+  document.getElementById("progLabel").textContent = `${done} / ${totalProbs} solved`;
+}
+
+function buildUI() {
+  const main = document.getElementById("main");
+  main.innerHTML = "";
+
+  TOPICS.forEach(topic => {
+    const card = document.createElement("div");
+    card.className = "topic-card";
+
+    const doneCnt = topic.problems.filter(p => state[p.n + "_" + topic.name]).length;
+
+    card.innerHTML = `
+      <div class="topic-head" style="background:${topic.color}">
+        <div class="topic-left">
+          <div class="topic-icon">${topic.icon}</div>
+          <div>
+            <div class="topic-name">${topic.name}</div>
+            <div class="topic-done" id="done_${topic.name.replace(/\s/g,'_')}">${doneCnt} of ${topic.problems.length} solved</div>
+          </div>
+        </div>
+        <div class="topic-badge">${topic.problems.length} problems</div>
+      </div>
+      <div class="col-head">
+        <div>#</div>
+        <div>Problem</div>
+        <div>Difficulty</div>
+        <div class="col-head-solve">Solve</div>
+        <div></div>
+      </div>
+    `;
+
+    topic.problems.forEach(prob => {
+      const key = prob.n + "_" + topic.name;
+      const isDone = !!state[key];
+      const row = document.createElement("div");
+      row.className = "prob-row" + (isDone ? " done" : "");
+
+      const lcURL = `https://leetcode.com/problems/${prob.lc}/`;
+      const url = prob.url || lcURL;
+
+      row.innerHTML = `
+        <div class="p-num">${prob.n}</div>
+        <div class="p-name">${prob.t}</div>
+        <div><span class="badge ${prob.d}">${prob.d}</span></div>
+        <div>
+          <a class="solve-btn" href="${url}" target="_blank" rel="noopener"
+             onclick="event.stopPropagation()">
+            <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M2 10L10 2M10 2H5M10 2v5"/>
+            </svg>
+            Solve
+          </a>
+        </div>
+        <div class="cb-wrap">
+          <input type="checkbox" class="cb" ${isDone ? "checked" : ""}
+                 aria-label="Mark ${prob.t} as done"/>
+        </div>
+      `;
+
+      const cb = row.querySelector(".cb");
+
+      function toggle(checked) {
+        state[key] = checked;
+        cb.checked = checked;
+        row.className = "prob-row" + (checked ? " done" : "");
+        save();
+        refreshProgress();
+        const newDone = topic.problems.filter(p => state[p.n + "_" + topic.name]).length;
+        document.getElementById("done_" + topic.name.replace(/\s/g,'_')).textContent =
+          `${newDone} of ${topic.problems.length} solved`;
+      }
+
+      cb.addEventListener("change", e => { e.stopPropagation(); toggle(cb.checked); });
+
+      card.appendChild(row);
+    });
+
+    main.appendChild(card);
+  });
+
+  refreshProgress();
+}
+
+buildUI();
+</script>
+</body>
+</html>
