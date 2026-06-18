@@ -312,71 +312,7 @@
 
 <footer>DSA Sheet &nbsp;·&nbsp; Topic-wise Reference &nbsp;·&nbsp; LeetCode Problems</footer>
 
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js"></script>
 <script>
-// ===== FIREBASE CONFIG =====
-const FIREBASE_CONFIG = {
-  apiKey: "AIzaSyAuFFXFkG2UXrXo66v9mk3ukj1JyTrP8LI",
-  authDomain: "dsa-sheet-6f2cc.firebaseapp.com",
-  databaseURL: "https://dsa-sheet-6f2cc-default-rtdb.firebaseio.com",
-  projectId: "dsa-sheet-6f2cc",
-  storageBucket: "dsa-sheet-6f2cc.firebasestorage.app",
-  messagingSenderId: "699351408354",
-  appId: "1:699351408354:web:d9c92a60d03b565cfe88bb",
-  measurementId: "G-0X11T7EZML"
-};
-// ============================
-
-firebase.initializeApp(FIREBASE_CONFIG);
-const db = firebase.database();
-const auth = firebase.auth();
-
-let userID = null;
-let stateRef = null;
-
-// Anonymous sign-in
-auth.signInAnonymously().then(() => {
-  userID = auth.currentUser.uid;
-  stateRef = db.ref(`users/${userID}/progress`);
-  
-  // Load initial data, then build UI
-  stateRef.once("value", snapshot => {
-    state = snapshot.val() || {};
-    buildUI();
-    attachListener();
-  }).catch(err => {
-    console.error("Data load error:", err);
-    state = {};
-    buildUI();
-    attachListener();
-  });
-}).catch(err => {
-  console.error("Auth error:", err);
-  console.error("Firebase config might be invalid");
-  state = {};
-  buildUI();
-});
-
-function attachListener() {
-  if (!stateRef) return;
-  stateRef.on("value", snapshot => {
-    const data = snapshot.val() || {};
-    state = data;
-    refreshProgress();
-    // Re-render UI to reflect updates from other devices
-    const allRows = document.querySelectorAll(".prob-row");
-    allRows.forEach(row => {
-      const key = row.dataset.key;
-      const isDone = !!state[key];
-      row.className = "prob-row" + (isDone ? " done" : "");
-      const checkbox = row.querySelector(".cb");
-      if (checkbox) checkbox.checked = isDone;
-    });
-  });
-}
-
 const TOPICS = [
   {
     name: "Arrays", icon: "📊", color: "#2563EB",
@@ -526,13 +462,10 @@ document.getElementById("totalCount").textContent = totalProbs;
 document.getElementById("progLabel").textContent = `0 / ${totalProbs} solved`;
 
 // state
+const SK = "dsa_v2";
 let state = {};
-
-function save() {
-  if (stateRef) {
-    stateRef.set(state).catch(err => console.error("Save error:", err));
-  }
-}
+try { state = JSON.parse(localStorage.getItem(SK) || "{}"); } catch(e) {}
+function save() { try { localStorage.setItem(SK, JSON.stringify(state)); } catch(e) {} }
 
 function refreshProgress() {
   const done = Object.values(state).filter(Boolean).length;
@@ -578,7 +511,6 @@ function buildUI() {
       row.dataset.name = prob.t.toLowerCase();
       row.dataset.num = prob.n.toLowerCase();
       row.dataset.topic = topic.name.toLowerCase();
-      row.dataset.key = key;
 
       const lcURL = `https://leetcode.com/problems/${prob.lc}/`;
       const url = prob.url || lcURL;
@@ -644,7 +576,7 @@ function filterProblems() {
 const searchInput = document.getElementById("searchInput");
 searchInput.addEventListener("input", filterProblems);
 
-// buildUI() is called after Firebase authentication succeeds
+buildUI();
 </script>
 </body>
 </html>
