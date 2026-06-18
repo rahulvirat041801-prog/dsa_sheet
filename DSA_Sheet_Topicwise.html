@@ -340,11 +340,23 @@ let stateRef = null;
 auth.signInAnonymously().then(() => {
   userID = auth.currentUser.uid;
   stateRef = db.ref(`users/${userID}/progress`);
-  buildUI();
-  attachListener();
+  
+  // Load initial data, then build UI
+  stateRef.once("value", snapshot => {
+    state = snapshot.val() || {};
+    buildUI();
+    attachListener();
+  }).catch(err => {
+    console.error("Data load error:", err);
+    state = {};
+    buildUI();
+    attachListener();
+  });
 }).catch(err => {
   console.error("Auth error:", err);
-  alert("Please configure Firebase config in the HTML file");
+  console.error("Firebase config might be invalid");
+  state = {};
+  buildUI();
 });
 
 function attachListener() {
